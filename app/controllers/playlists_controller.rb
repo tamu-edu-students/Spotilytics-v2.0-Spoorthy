@@ -64,6 +64,50 @@ class PlaylistsController < ApplicationController
     end
   end
 
+  # POST /create_playlist_from_recommendations
+  def create_from_recommendations
+    spotify_client = SpotifyClient.new(session: session)
+
+    uris = Array(params[:uris]).map(&:to_s).reject(&:blank?)
+    if uris.empty?
+      redirect_to recommendations_path, alert: "No tracks to add to playlist." and return
+    end
+
+    begin
+      user_info   = (session[:spotify_user] || {}).dup
+      indifferent = user_info.respond_to?(:with_indifferent_access) ? user_info.with_indifferent_access : user_info
+      user_id     = indifferent[:id].presence || indifferent["id"].presence
+
+      unless user_id.present?
+        user_id = spotify_client.current_user_id
+        session[:spotify_user] ||= {}
+        if session[:spotify_user].respond_to?(:merge!)
+          session[:spotify_user].merge!({ "id" => user_id })
+        else
+          session[:spotify_user]["id"] = user_id
+        end
+      end
+
+      playlist_name = params[:playlist_name].presence || "Spotilytics Recommendations - #{Time.current.strftime('%b %d, %Y')}"
+      playlist_desc = params[:playlist_desc].presence || "Auto-created from Spotilytics • Your Recommendations"
+
+      playlist_id = spotify_client.create_playlist_for(
+        user_id:     user_id,
+        name:        playlist_name,
+        description: playlist_desc,
+        public:      false
+      )
+
+      spotify_client.add_tracks_to_playlist(playlist_id: playlist_id, uris: uris)
+
+      redirect_to recommendations_path, notice: "Playlist created on Spotify: #{playlist_name}"
+    rescue SpotifyClient::UnauthorizedError
+      redirect_to root_path, alert: "Session expired. Please sign in with Spotify again."
+    rescue SpotifyClient::Error => e
+      redirect_to recommendations_path, alert: "Couldn't create playlist on Spotify: #{e.message}"
+    end
+  end
+
   private
 
   def require_spotify_auth!

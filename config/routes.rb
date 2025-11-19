@@ -29,6 +29,7 @@ Rails.application.routes.draw do
   # GET /top_tracks
   get "/top_tracks", to: "top_tracks#index", as: :top_tracks
   post "/create_playlist", to: "playlists#create", as: :create_playlist
+  post "/create_playlist_from_recommendations", to: "playlists#create_from_recommendations", as: :create_playlist_from_recommendations
 
   # Get Recommendations
   get  "recommendations",        to: "recommendations#recommendations",   as: :recommendations
