@@ -10,7 +10,10 @@ RSpec.describe RecommendationsController, type: :controller do
             }
         end
 
-        before { session[:spotify_user] = session_user }
+        before do
+            session[:spotify_user] = session_user
+            session[:spotify_token] = "valid_token"
+        end
     end
 
     describe "Get #recommendations" do

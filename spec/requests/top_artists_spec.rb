@@ -6,6 +6,7 @@ RSpec.describe "TopArtists", type: :request do
 
   before do
     allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(OpenStruct.new(email: 'test@example.com'))
+    allow_any_instance_of(ApplicationController).to receive(:require_spotify_auth!).and_return(true)
     stub_spotify_top_artists(10)
   end
 

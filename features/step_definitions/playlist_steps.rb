@@ -30,6 +30,15 @@ Given('I am logged in for playlists') do
     }
   )
 
+  # Stub the /me endpoint for current_user_id
+  stub_request(:get, "https://api.spotify.com/v1/me")
+    .to_return(status: 200, body: { id: "user_123", display_name: "Test User" }.to_json)
+  
+  # Stub top_tracks endpoint for short_term (default fallback)
+  stub_request(:get, "https://api.spotify.com/v1/me/top/tracks")
+    .with(query: hash_including({}))
+    .to_return(status: 200, body: { items: [] }.to_json)
+
   visit '/auth/spotify'
   visit '/auth/spotify/callback'
 end

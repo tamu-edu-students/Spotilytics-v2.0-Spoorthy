@@ -125,6 +125,8 @@ Given("Spotify responds with top tracks for the dashboard") do
   allow(mock).to receive(:top_artists).with(limit: 10, time_range: "long_term").and_return(artists)
   allow(mock).to receive(:followed_artists).and_return([])
   allow(mock).to receive(:new_releases).and_return([])
+  allow(mock).to receive(:saved_shows).and_return(OpenStruct.new(items: []))
+  allow(mock).to receive(:saved_episodes).and_return(OpenStruct.new(items: []))
 end
 
 When("I go to the dashboard") do
@@ -151,10 +153,14 @@ Given("Spotify for the dashboard raises Unauthorized") do
   mock = stub_spotify_for_dashboard!
   allow(mock).to receive(:top_tracks).and_raise(SpotifyClient::UnauthorizedError.new("expired"))
   allow(mock).to receive(:top_artists).and_raise(SpotifyClient::UnauthorizedError.new("expired"))
+  allow(mock).to receive(:saved_shows).and_return(OpenStruct.new(items: []))
+  allow(mock).to receive(:saved_episodes).and_return(OpenStruct.new(items: []))
 end
 
 Given("Spotify for the dashboard raises a generic error") do
   mock = stub_spotify_for_dashboard!
   allow(mock).to receive(:top_tracks).and_raise(SpotifyClient::Error.new("rate limited"))
   allow(mock).to receive(:top_artists).and_raise(SpotifyClient::Error.new("rate limited"))
+  allow(mock).to receive(:saved_shows).and_return(OpenStruct.new(items: []))
+  allow(mock).to receive(:saved_episodes).and_return(OpenStruct.new(items: []))
 end

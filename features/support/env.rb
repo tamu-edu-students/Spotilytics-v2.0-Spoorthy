@@ -8,6 +8,9 @@ require 'cucumber/rails'
 require 'capybara/rails'
 require 'database_cleaner/active_record'
 require 'simplecov'
+require 'webmock/cucumber'
+WebMock.disable_net_connect!(allow_localhost: true)
+
 require 'capybara/rails'
 require 'capybara/cucumber'
 require 'rspec/mocks'
