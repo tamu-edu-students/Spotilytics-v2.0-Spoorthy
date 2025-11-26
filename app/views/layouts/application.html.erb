@@ -63,16 +63,44 @@
     </header>
     
 
-    <% if notice.present? || alert.present? %> 
-      <div class="flash-div"> 
-        <% if notice.present? %> 
-          <p class="flash flash-notice spotify-notice"><%= notice %></p> 
-        <% end %> 
-        <% if alert.present? %> 
-          <p class="flash flash-alert spotify-alert"><%= alert %></p> 
-        <% end %>
-      </div> 
-    <% end %>
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+      <% if notice.present? %>
+        <div class="toast align-items-center text-white bg-success border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="d-flex">
+            <div class="toast-body d-flex align-items-center gap-2">
+              <i class="bi bi-check-circle-fill"></i>
+              <%= notice %>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+        </div>
+      <% end %>
+
+      <% if alert.present? %>
+        <div class="toast align-items-center text-white bg-danger border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="d-flex">
+            <div class="toast-body d-flex align-items-center gap-2">
+              <i class="bi bi-exclamation-circle-fill"></i>
+              <%= alert %>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+        </div>
+      <% end %>
+    </div>
     <%= yield %>
+    <script>
+      document.addEventListener('turbo:load', function() {
+        document.querySelectorAll('.toast .btn-close').forEach(button => {
+          button.addEventListener('click', function() {
+            const toast = this.closest('.toast');
+            if (toast) {
+              toast.classList.remove('show');
+              setTimeout(() => toast.remove(), 300); // Wait for fade out
+            }
+          });
+        });
+      });
+    </script>
   </body>
 </html>

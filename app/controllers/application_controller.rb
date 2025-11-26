@@ -15,8 +15,7 @@ class ApplicationController < ActionController::Base
   end
 
   def require_spotify_auth!
-    return if logged_in?
-
-    redirect_to home_path, alert: "You must log in with spotify to view this page."
+    return if session[:spotify_token].present?
+    redirect_to root_path, alert: "Please sign in with Spotify first."
   end
 end
