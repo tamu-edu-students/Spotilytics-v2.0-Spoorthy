@@ -209,6 +209,44 @@
     </div>
   </div>
 
+  <div class="d-flex flex-col align-items-center justify-content-between" style="min-width: 1300px; width: 100%;">
+    <div class="spotify-card p-3 mb-4" style="width: 49%;">
+      <h5 class="text-light mb-3">Saved Shows</h5>
+      <% if @saved_shows_dashboard.present? %>
+        <div class="d-flex gap-2 mb-3 overflow-hidden flex-wrap">
+          <% @saved_shows_dashboard.each do |show| %>
+            <% if show.image_url %>
+              <img src="<%= show.image_url %>" alt="<%= show.name %>" class="rounded shadow-sm" style="width: 64px; height: 64px; object-fit: cover;">
+            <% end %>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-secondary">View and manage your saved podcasts and shows.</p>
+      <% end %>
+      <div class="text-center mt-auto">
+        <%= link_to 'View Saved Shows', saved_shows_path, class: 'btn btn-spotify' %>
+      </div>
+    </div>
+
+    <div class="spotify-card p-3 mb-4" style="width: 49%;">
+      <h5 class="text-light mb-3">Saved Episodes</h5>
+      <% if @saved_episodes_dashboard.present? %>
+        <div class="d-flex gap-2 mb-3 overflow-hidden flex-wrap">
+          <% @saved_episodes_dashboard.each do |episode| %>
+            <% if episode.image_url %>
+              <img src="<%= episode.image_url %>" alt="<%= episode.name %>" class="rounded shadow-sm" style="width: 64px; height: 64px; object-fit: cover;">
+            <% end %>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-secondary">View and manage your saved podcast episodes.</p>
+      <% end %>
+      <div class="text-center mt-auto">
+        <%= link_to 'View Saved Episodes', saved_episodes_path, class: 'btn btn-spotify' %>
+      </div>
+    </div>
+  </div>
+
 <%# Load Chart.js and render ONLY if data present %>
 <% if @genre_chart.present? %>
   <!-- The exact same palette used by <noscript> -->

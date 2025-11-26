@@ -1,7 +1,7 @@
 require "set"
 
 class PagesController < ApplicationController
-  before_action :require_spotify_auth!, only: %i[dashboard top_artists top_tracks view_profile clear]
+  before_action :require_spotify_auth!, only: %i[dashboard top_artists view_profile clear]
 
   TOP_ARTIST_TIME_RANGES = [
     { key: "long_term", label: "Past Year" },
@@ -10,11 +10,12 @@ class PagesController < ApplicationController
   ].freeze
 
   def clear
-    spotify_client.clear_user_cache()
-    redirect_to home_path, notice: "Data refreshed successfully" and return
-
-    rescue SpotifyClient::UnauthorizedError
-      redirect_to home_path, alert: "You must log in with spotify to refresh your data." and return
+    spotify_client.clear_user_cache
+    redirect_to home_path, notice: 'Data refreshed successfully'
+  rescue SpotifyClient::UnauthorizedError
+    redirect_to home_path, alert: "You must log in with spotify to refresh your data."
+  rescue SpotifyClient::Error => e
+    redirect_to home_path, alert: "We were unable to load your Spotify data right now. Please try again later."
   end
 
   def home
@@ -37,6 +38,10 @@ class PagesController < ApplicationController
 
     # New Releases
     @new_releases = fetch_new_releases(limit: 2)
+
+    # Saved Content for Dashboard
+    @saved_shows_dashboard = fetch_saved_shows(limit: 8)
+    @saved_episodes_dashboard = fetch_saved_episodes(limit: 8)
 
 
   rescue SpotifyClient::UnauthorizedError
@@ -107,16 +112,7 @@ class PagesController < ApplicationController
     end
   end
 
-  def top_tracks
-    limit = normalize_limit(params[:limit])
-    @top_tracks = fetch_top_tracks(limit: limit)
-  rescue SpotifyClient::UnauthorizedError
-    redirect_to home_path, alert: "You must log in with spotify to view your top tracks." and return
-  rescue SpotifyClient::Error => e
-    Rails.logger.warn "Failed to fetch Spotify top tracks: #{e.message}"
-    flash.now[:alert] = "We were unable to load your top tracks from Spotify. Please try again later."
-    @top_tracks = []
-  end
+
 
   private
 
@@ -142,6 +138,18 @@ class PagesController < ApplicationController
 
   def fetch_followed_artists(limit:)
     spotify_client.followed_artists(limit: limit)
+  end
+
+  def fetch_saved_shows(limit:)
+    spotify_client.saved_shows(limit: limit).items
+  rescue SpotifyClient::Error
+    []
+  end
+
+  def fetch_saved_episodes(limit:)
+    spotify_client.saved_episodes(limit: limit).items
+  rescue SpotifyClient::Error
+    []
   end
 
   # Accept only 10, 25, 50; default to 10

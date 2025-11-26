@@ -12,7 +12,10 @@ RSpec.describe PagesController, type: :controller do
       }
     end
 
-    before { session[:spotify_user] = session_user }
+    before do
+      session[:spotify_user] = session_user
+      session[:spotify_token] = "valid_token"
+    end
   end
 
   describe "GET #dashboard (Top Tracks preview section)" do
@@ -60,6 +63,8 @@ RSpec.describe PagesController, type: :controller do
 
         # dashboard also fetches new releases; stub it to something harmless
         allow(mock_client).to receive(:new_releases).and_return([])
+        allow(mock_client).to receive(:saved_shows).and_return(OpenStruct.new(items: []))
+        allow(mock_client).to receive(:saved_episodes).and_return(OpenStruct.new(items: []))
       end
 
       it "assigns top tracks and primary track for the preview card" do
@@ -148,6 +153,8 @@ RSpec.describe PagesController, type: :controller do
       allow(mock_client).to receive(:top_tracks).with(limit: 10, time_range: "long_term").and_return([])
       allow(mock_client).to receive(:followed_artists).and_return([])
       allow(mock_client).to receive(:new_releases).and_return([])
+      allow(mock_client).to receive(:saved_shows).and_return(OpenStruct.new(items: []))
+      allow(mock_client).to receive(:saved_episodes).and_return(OpenStruct.new(items: []))
     end
 
     context "when SpotifyClient returns artists with genres" do
@@ -175,6 +182,8 @@ RSpec.describe PagesController, type: :controller do
         allow(mock_client).to receive(:top_artists).and_return(mock_artists)
         allow(mock_client).to receive(:followed_artists).and_return([])
         allow(mock_client).to receive(:new_releases).and_return([])
+        allow(mock_client).to receive(:saved_shows).and_return(OpenStruct.new(items: []))
+        allow(mock_client).to receive(:saved_episodes).and_return(OpenStruct.new(items: []))
       end
 
       it "assigns @genre_chart with an 'Other' bucket" do
@@ -350,62 +359,6 @@ RSpec.describe PagesController, type: :controller do
     end
   end
 
-  describe "GET #top_tracks (PagesController)" do
-  include_context "logged in user"
-
-  routes { ActionDispatch::Routing::RouteSet.new }
-  before do
-    routes.draw do
-      get "top_tracks" => "pages#top_tracks"
-      get "home"       => "pages#home"
-    end
-  end
-
-  let(:mock_client) { instance_double(SpotifyClient) }
-  before { allow(SpotifyClient).to receive(:new).with(session: anything).and_return(mock_client) }
-
-  context "when Spotify raises UnauthorizedError" do
-    it "redirects to home with the re-auth alert" do
-      allow(mock_client).to receive(:top_tracks)
-        .and_raise(SpotifyClient::UnauthorizedError.new("expired"))
-
-      get :top_tracks, params: { limit: "25" }
-
-      expect(response).to redirect_to(home_path)
-      expect(flash[:alert]).to eq("You must log in with spotify to view your top tracks.")
-      end
-    end
-  end
-
-  describe 'GET #top_tracks' do
-    before do
-      routes.draw do
-        get '/top_tracks' => 'pages#top_tracks'
-      end
-
-      allow(controller).to receive(:default_render).and_return(nil)
-    end
-
-    after { Rails.application.reload_routes! }
-
-    it 'generic error branch logs, flashes and assigns empty @top_tracks' do
-      session[:spotify_user] = { 'display_name' => 'Spec' }
-
-      mock = instance_double(SpotifyClient)
-      allow(SpotifyClient).to receive(:new).with(session: anything).and_return(mock)
-      allow(mock).to receive(:top_tracks)
-        .with(limit: 10, time_range: 'long_term')
-        .and_raise(SpotifyClient::Error.new('rate limited'))
-
-      expect(Rails.logger).to receive(:warn).with(/Failed to fetch Spotify top tracks: rate limited/)
-
-      get :top_tracks, params: { limit: '10' }
-
-      expect(flash.now[:alert]).to eq('We were unable to load your top tracks from Spotify. Please try again later.')
-      expect(assigns(:top_tracks)).to eq([])
-    end
-  end
-
   describe "GET #view_profile" do
     include_context "logged in user"
 
@@ -515,6 +468,25 @@ RSpec.describe PagesController, type: :controller do
 
         expect(response).to redirect_to(home_path)
         expect(flash[:alert]).to eq("You must log in with spotify to refresh your data.")
+      end
+    end
+
+    context "when SpotifyClient raises a generic Error" do
+      before do
+        mock_client = instance_double(SpotifyClient)
+        allow(SpotifyClient).to receive(:new)
+          .with(session: anything)
+          .and_return(mock_client)
+        
+        allow(mock_client).to receive(:clear_user_cache)
+          .and_raise(SpotifyClient::Error.new("rate limited"))
+      end
+
+      it "redirects to home with an alert" do
+        get :clear
+
+        expect(response).to redirect_to(home_path)
+        expect(flash[:alert]).to eq("We were unable to load your Spotify data right now. Please try again later.")
       end
     end
   end
