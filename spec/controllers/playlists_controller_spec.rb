@@ -244,7 +244,7 @@ RSpec.describe PlaylistsController, type: :controller do
             let(:found_track) { double("Track", id: "t100", name: "Found Song", artists: "Artist Z") }
 
             before do
-                allow(spotify_client).to receive(:search_tracks).and_return([found_track])
+                allow(spotify_client).to receive(:search_tracks).and_return([ found_track ])
             end
 
             it "adds the track to builder and renders new with notice" do
@@ -260,7 +260,7 @@ RSpec.describe PlaylistsController, type: :controller do
             let(:track1) { double("Track", id: "tA", name: "Track One", artists: "Artist A") }
 
             before do
-                allow(spotify_client).to receive(:search_tracks).and_return([track1], [], [track1])
+                allow(spotify_client).to receive(:search_tracks).and_return([ track1 ], [], [ track1 ])
             end
 
             it "adds found songs, reports duplicates and not found, and renders new" do
@@ -272,8 +272,7 @@ RSpec.describe PlaylistsController, type: :controller do
                 expect(response).to render_template(:new)
                 expect(flash[:notice]).to include("Added 1 song")
                 expect(flash[:notice]).to include("Skipped duplicates: Track One")
-                expect(flash[:alert]).to include(%q{track:"Song Missing" artist:"Artist X"})
-
+                expect(flash[:alert]).to include(%q(track:"Song Missing" artist:"Artist X"))
             end
         end
 
@@ -283,7 +282,7 @@ RSpec.describe PlaylistsController, type: :controller do
             let(:track_dup) { double("Track", id: "dup1", name: "Song D", artists: "Artist D") }
 
             before do
-                allow(spotify_client).to receive(:search_tracks).and_return([track_hit], [], [track_dup])
+                allow(spotify_client).to receive(:search_tracks).and_return([ track_hit ], [], [ track_dup ])
             end
 
             it "reports added, duplicates, and no matches appropriately" do

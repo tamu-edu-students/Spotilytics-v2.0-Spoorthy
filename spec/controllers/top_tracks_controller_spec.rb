@@ -178,8 +178,8 @@ RSpec.describe TopTracksController, type: :controller do
         session[:hidden_top_tracks] = {
           "hid_user2" => {
             "short_term" => [],
-            "medium_term" => ["m1", "m2"],
-            "long_term" => ["l1"]
+            "medium_term" => [ "m1", "m2" ],
+            "long_term" => [ "l1" ]
           }
         }
 
@@ -224,7 +224,7 @@ RSpec.describe TopTracksController, type: :controller do
 
       before do
         session[:spotify_user] = session_user.merge("id" => "user_missing")
-        session[:hidden_top_tracks] = { "user_missing" => { "short_term" => ["missing_1"], "medium_term" => [], "long_term" => [] } }
+        session[:hidden_top_tracks] = { "user_missing" => { "short_term" => [ "missing_1" ], "medium_term" => [], "long_term" => [] } }
 
         allow(SpotifyClient).to receive(:new).with(session: anything).and_return(mock_client)
 
