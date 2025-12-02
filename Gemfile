@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
 # Declare ruby version
-ruby "3.4.1"
+ruby "3.3.6"
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 8.0.2", ">= 8.0.2.1"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
@@ -46,6 +46,7 @@ gem "thruster", require: false
 gem "omniauth", "~> 2.1"
 gem "omniauth-rails_csrf_protection", "~> 1.0"
 gem "rspotify", "~> 2.11"
+gem "ruby-openai"
 
 gem "dotenv-rails", groups: [ :development, :test ]
 

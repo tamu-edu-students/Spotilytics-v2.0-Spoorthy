@@ -1,0 +1,62 @@
+<div class="container mt-5">
+  <h1 class="text-center mb-4 text-white">AI Recommendations</h1>
+  <p class="text-center text-secondary mb-5">Based on your last 10 saved shows</p>
+
+  <% if @error %>
+    <div class="alert alert-danger"><%= @error %></div>
+  <% end %>
+
+  <% if @recommendations.any? %>
+    <div class="text-center mb-4">
+      <%= button_to "Save All", bulk_save_saved_shows_path, params: { ids: @recommendations.map(&:id) }, method: :post, class: "btn btn-success btn-lg" %>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-4 mb-5">
+      <% @recommendations.each do |show| %>
+        <div class="col">
+          <div class="card h-100 bg-dark text-white border-0 shadow-sm p-3">
+            <div class="position-relative mb-3">
+              <% if show.image_url %>
+                <img src="<%= show.image_url %>" class="card-img-top rounded shadow" alt="<%= show.name %>" style="aspect-ratio: 1/1; object-fit: cover;">
+              <% else %>
+                <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center rounded shadow" style="aspect-ratio: 1/1;">
+                  <span>No Image</span>
+                </div>
+              <% end %>
+            </div>
+            <div class="d-flex flex-column flex-grow-1">
+              <h5 class="card-title text-truncate fw-bold mb-1" title="<%= show.name %>"><%= show.name.truncate(25) %></h5>
+              <p class="card-text text-secondary small mb-2 text-truncate"><%= show.publisher.truncate(30) %></p>
+              
+              <div class="mt-auto pt-3">
+                <%= button_to "Save", saved_shows_path(id: show.id), method: :post, class: "btn btn-sm btn-spotify w-100" %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="text-center text-white">
+      <p>Could not find any recommendations at this time.</p>
+    </div>
+  <% end %>
+
+  <div class="text-center mt-5">
+    <%= link_to "Back to Saved Shows", saved_shows_path, class: "text-muted text-decoration-none" %>
+  </div>
+</div>
+
+<style>
+  .btn-spotify {
+    background-color: #1DB954;
+    color: white;
+    border: none;
+    font-weight: 700;
+    border-radius: 500px;
+  }
+  .btn-spotify:hover {
+    background-color: #1ed760;
+    color: white;
+  }
+</style>

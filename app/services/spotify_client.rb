@@ -243,6 +243,41 @@ class SpotifyClient
     true
   end
 
+  def get_episode(id)
+    cache_for([ "get_episode", id ]) do
+      access_token = ensure_access_token!
+      response = get("/episodes/#{id}", access_token)
+      
+      OpenStruct.new(
+        id: response["id"],
+        name: response["name"],
+        description: response["description"],
+        show_name: response.dig("show", "name"),
+        image_url: response.dig("images", 0, "url"),
+        spotify_url: response.dig("external_urls", "spotify"),
+        duration_ms: response["duration_ms"],
+        release_date: response["release_date"]
+      )
+    end
+  end
+
+  def get_show(id)
+    cache_for([ "get_show", id ]) do
+      access_token = ensure_access_token!
+      response = get("/shows/#{id}", access_token)
+      
+      OpenStruct.new(
+        id: response["id"],
+        name: response["name"],
+        publisher: response["publisher"],
+        description: response["description"],
+        image_url: response.dig("images", 0, "url"),
+        spotify_url: response.dig("external_urls", "spotify"),
+        total_episodes: response["total_episodes"]
+      )
+    end
+  end
+
 
   def top_artists(limit:, time_range:)
     cache_for([ "top_artists", time_range, limit ]) do

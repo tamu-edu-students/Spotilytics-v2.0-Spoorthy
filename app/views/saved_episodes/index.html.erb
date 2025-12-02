@@ -1,12 +1,31 @@
 <main class="container mt-4">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="text-light">Saved Episodes</h1>
-    <%= link_to "Find New Episodes", search_saved_episodes_path, class: "btn btn-spotify" %>
+    <div class="d-flex gap-2">
+      <%= link_to bulk_recommendations_saved_episodes_path, class: "btn btn-outline-light rounded-pill px-4 fw-bold d-flex align-items-center gap-2" do %>
+        <i class="bi bi-stars"></i> AI Recommendations
+      <% end %>
+      <%= link_to search_saved_episodes_path, class: "btn btn-spotify rounded-pill px-4 fw-bold d-flex align-items-center gap-2" do %>
+        <i class="bi bi-search"></i> Find New Episodes
+      <% end %>
+    </div>
   </div>
 
   <% if @error %>
     <div class="alert alert-danger"><%= @error %></div>
   <% end %>
+
+  <div class="mb-3 d-flex justify-content-end">
+    <% if params[:group_by] == "show" %>
+      <%= link_to saved_episodes_path(page: @page), class: "btn btn-outline-light rounded-pill px-3 d-flex align-items-center gap-2" do %>
+        <i class="bi bi-grid"></i> Ungroup
+      <% end %>
+    <% else %>
+      <%= link_to saved_episodes_path(page: @page, group_by: "show"), class: "btn btn-outline-light rounded-pill px-3 d-flex align-items-center gap-2" do %>
+        <i class="bi bi-collection"></i> Group by Show
+      <% end %>
+    <% end %>
+  </div>
 
   <% if @episodes.empty? && !@error %>
     <div class="text-center text-white py-5">
@@ -14,58 +33,40 @@
       <p class="text-secondary">Search for episodes to add them to your library.</p>
     </div>
   <% else %>
-    <div class="list-group mb-5">
-      <% @episodes.each do |episode| %>
-        <div class="list-group-item list-group-item-action bg-dark text-white border-0 mb-2 rounded d-flex align-items-center p-3 spotify-list-hover overflow-hidden">
-          <% if episode.image_url %>
-            <img src="<%= episode.image_url %>" alt="<%= episode.name %>" class="rounded me-3 shadow-sm" style="width: 64px; height: 64px; object-fit: cover; flex-shrink: 0;">
-          <% else %>
-            <div class="rounded me-3 bg-secondary d-flex align-items-center justify-content-center" style="width: 64px; height: 64px; flex-shrink: 0;">
-              <span>No Image</span>
-            </div>
+    <% if @grouped_episodes %>
+      <% @grouped_episodes.each do |show_name, episodes| %>
+        <h3 class="text-white mt-4 mb-3 border-bottom border-secondary pb-2"><%= show_name %></h3>
+        <div class="list-group mb-3">
+          <% episodes.each do |episode| %>
+            <%= render partial: "episode_item", locals: { episode: episode } %>
           <% end %>
-          
-          <div class="flex-grow-1 min-w-0 me-3">
-            <h6 class="mb-1 fw-bold text-white text-truncate" title="<%= episode.name %>"><%= episode.name.truncate(50) %></h6>
-            <p class="mb-1 text-secondary small text-truncate"><%= episode.show_name.truncate(40) %></p>
-            <div class="d-flex align-items-center gap-2 text-secondary small">
-              <span><%= (episode.duration_ms / 60000).round %> min</span>
-              <span>•</span>
-              <span><%= episode.release_date %></span>
-            </div>
-          </div>
-
-          <div class="d-flex align-items-center gap-2 flex-shrink-0">
-            <a href="<%= episode.spotify_url %>" target="_blank" class="btn btn-icon btn-outline-light rounded-circle" title="Play on Spotify">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-play-fill" viewBox="0 0 16 16">
-                <path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z"/>
-              </svg>
-            </a>
-            <%= button_to saved_episode_path(episode.id), method: :delete, class: "btn btn-icon btn-outline-danger rounded-circle", title: "Remove from Library", data: { turbo_confirm: "Are you sure?" } do %>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
-                <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
-              </svg>
-            <% end %>
-          </div>
         </div>
       <% end %>
-    </div>
+    <% else %>
+      <div class="list-group mb-5">
+        <% @episodes.each do |episode| %>
+          <%= render partial: "episode_item", locals: { episode: episode } %>
+        <% end %>
+      </div>
+    <% end %>
 
-    <div class="d-flex justify-content-center align-items-center gap-3 mb-5">
-      <% if @page > 1 %>
-        <%= link_to "Previous", saved_episodes_path(page: @page - 1), class: "btn btn-outline-light" %>
-      <% else %>
-        <button class="btn btn-outline-secondary" disabled>Previous</button>
-      <% end %>
+    <% unless params[:group_by] == "show" %>
+      <div class="d-flex justify-content-center align-items-center gap-3 mb-5 mt-4">
+        <% if @page > 1 %>
+          <%= link_to "Previous", saved_episodes_path(page: @page - 1, group_by: params[:group_by]), class: "btn btn-outline-light" %>
+        <% else %>
+          <button class="btn btn-outline-secondary" disabled>Previous</button>
+        <% end %>
 
-      <span class="text-white">Page <%= @page %> of <%= @total_pages > 0 ? @total_pages : 1 %></span>
+        <span class="text-white">Page <%= @page %> of <%= @total_pages > 0 ? @total_pages : 1 %></span>
 
-      <% if @page < @total_pages %>
-        <%= link_to "Next", saved_episodes_path(page: @page + 1), class: "btn btn-outline-light" %>
-      <% else %>
-        <button class="btn btn-outline-secondary" disabled>Next</button>
-      <% end %>
-    </div>
+        <% if @page < @total_pages %>
+          <%= link_to "Next", saved_episodes_path(page: @page + 1, group_by: params[:group_by]), class: "btn btn-outline-light" %>
+        <% else %>
+          <button class="btn btn-outline-secondary" disabled>Next</button>
+        <% end %>
+      </div>
+    <% end %>
   <% end %>
 </div>
 

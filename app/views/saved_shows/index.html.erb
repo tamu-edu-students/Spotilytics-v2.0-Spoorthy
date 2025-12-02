@@ -1,70 +1,84 @@
-<main class="container mt-4">
+<main class="container min-vh-100 d-flex flex-column py-5">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="text-light">Saved Shows</h1>
-    <%= link_to "Find New Shows", search_saved_shows_path, class: "btn btn-spotify" %>
+    <div class="d-flex gap-2">
+      <%= link_to bulk_recommendations_saved_shows_path, class: "btn btn-outline-light rounded-pill px-4 fw-bold d-flex align-items-center gap-2" do %>
+        <i class="bi bi-stars"></i> AI Recommendations
+      <% end %>
+      <%= link_to search_saved_shows_path, class: "btn btn-spotify rounded-pill px-4 fw-bold d-flex align-items-center gap-2" do %>
+        <i class="bi bi-search"></i> Find New Shows
+      <% end %>
+    </div>
   </div>
 
-  <% if @error %>
-    <div class="alert alert-danger"><%= @error %></div>
-  <% end %>
+  <div class="flex-grow-1 d-flex flex-column justify-content-center">
+    <% if @error %>
+      <div class="alert alert-danger"><%= @error %></div>
+    <% end %>
 
-  <% if @shows.empty? && !@error %>
-    <div class="text-center text-white py-5">
-      <p class="fs-4">You haven't saved any shows yet.</p>
-      <p class="text-secondary">Search for podcasts to add them to your library.</p>
-    </div>
-  <% else %>
-    <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-4 mb-5">
-      <% @shows.each do |show| %>
-        <div class="col">
-          <div class="card h-100 bg-dark text-white border-0 shadow-sm spotify-card-hover p-3 overflow-hidden">
-            <div class="position-relative mb-3">
-              <% if show.image_url %>
-                <img src="<%= show.image_url %>" class="card-img-top rounded shadow" alt="<%= show.name %>" style="aspect-ratio: 1/1; object-fit: cover;">
-              <% else %>
-                <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center rounded shadow" style="aspect-ratio: 1/1;">
-                  <span>No Image</span>
-                </div>
-              <% end %>
-            </div>
-            <div class="d-flex flex-column flex-grow-1 overflow-hidden">
-              <h5 class="card-title text-truncate fw-bold mb-1" title="<%= show.name %>"><%= show.name.truncate(25) %></h5>
-              <p class="card-text text-secondary small mb-2 text-truncate"><%= show.publisher.truncate(30) %></p>
-              
-              <div class="mt-auto d-flex justify-content-between align-items-center pt-3">
-                <a href="<%= show.spotify_url %>" target="_blank" class="btn btn-icon btn-outline-light rounded-circle" title="Play on Spotify">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-play-fill" viewBox="0 0 16 16">
-                    <path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z"/>
-                  </svg>
-                </a>
-                <%= button_to saved_show_path(show.id), method: :delete, class: "btn btn-icon btn-outline-danger rounded-circle", title: "Remove from Library", data: { turbo_confirm: "Are you sure?" } do %>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
-                    <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
-                  </svg>
+    <% if @shows.empty? && !@error %>
+      <div class="text-center text-white py-5">
+        <p class="fs-4">You haven't saved any shows yet.</p>
+        <p class="text-secondary">Search for podcasts to add them to your library.</p>
+      </div>
+    <% else %>
+      <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-4 mb-5 justify-content-center">
+        <% @shows.each do |show| %>
+          <div class="col">
+            <div class="card h-100 bg-dark text-white border-0 shadow-sm spotify-card-hover p-3 overflow-hidden">
+              <div class="position-relative mb-3">
+                <% if show.image_url %>
+                  <img src="<%= show.image_url %>" class="card-img-top rounded shadow" alt="<%= show.name %>" style="aspect-ratio: 1/1; object-fit: cover;">
+                <% else %>
+                  <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center rounded shadow" style="aspect-ratio: 1/1;">
+                    <span>No Image</span>
+                  </div>
                 <% end %>
+              </div>
+              <div class="d-flex flex-column flex-grow-1 overflow-hidden">
+                <h5 class="card-title text-truncate fw-bold mb-1" title="<%= show.name %>"><%= show.name.truncate(25) %></h5>
+                <p class="card-text text-secondary small mb-2 text-truncate"><%= show.publisher.truncate(30) %></p>
+                
+                <div class="mt-2 d-flex justify-content-center gap-2">
+                  <%= button_to "Why?", recommendation_saved_show_path(show.id), method: :post, class: "btn btn-sm btn-outline-info", style: "font-size: 0.8rem;", title: "Why I might like this?" %>
+                  <%= button_to "Similar", similar_saved_show_path(show.id), method: :post, class: "btn btn-sm btn-outline-warning", style: "font-size: 0.8rem;", title: "Find Similar Shows" %>
+                </div>
+
+                <div class="mt-auto d-flex justify-content-between align-items-center pt-3">
+                  <a href="<%= show.spotify_url %>" target="_blank" class="btn btn-icon btn-outline-light rounded-circle" title="Play on Spotify">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-play-fill" viewBox="0 0 16 16">
+                      <path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z"/>
+                    </svg>
+                  </a>
+                  <%= button_to saved_show_path(show.id), method: :delete, class: "btn btn-icon btn-outline-danger rounded-circle", title: "Remove from Library", data: { turbo_confirm: "Are you sure?" } do %>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                      <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
+                    </svg>
+                  <% end %>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      <% end %>
-    </div>
+        <% end %>
+      </div>
 
-    <div class="d-flex justify-content-center align-items-center gap-3 mb-5">
-      <% if @page > 1 %>
-        <%= link_to "Previous", saved_shows_path(page: @page - 1), class: "btn btn-outline-light" %>
-      <% else %>
-        <button class="btn btn-outline-secondary" disabled>Previous</button>
-      <% end %>
+      <div class="d-flex justify-content-center align-items-center gap-3 mb-5">
+        <% if @page > 1 %>
+          <%= link_to "Previous", saved_shows_path(page: @page - 1), class: "btn btn-outline-light" %>
+        <% else %>
+          <button class="btn btn-outline-secondary" disabled>Previous</button>
+        <% end %>
 
-      <span class="text-white">Page <%= @page %> of <%= @total_pages > 0 ? @total_pages : 1 %></span>
+        <span class="text-white">Page <%= @page %> of <%= @total_pages > 0 ? @total_pages : 1 %></span>
 
-      <% if @page < @total_pages %>
-        <%= link_to "Next", saved_shows_path(page: @page + 1), class: "btn btn-outline-light" %>
-      <% else %>
-        <button class="btn btn-outline-secondary" disabled>Next</button>
-      <% end %>
-    </div>
-  <% end %>
+        <% if @page < @total_pages %>
+          <%= link_to "Next", saved_shows_path(page: @page + 1), class: "btn btn-outline-light" %>
+        <% else %>
+          <button class="btn btn-outline-secondary" disabled>Next</button>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
 </div>
 
 <style>
