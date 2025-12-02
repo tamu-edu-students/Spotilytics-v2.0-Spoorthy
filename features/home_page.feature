@@ -26,6 +26,7 @@ Feature: Home Page
 
   Scenario: I want to go to my dashboard form the home page
     Given I am signed in with Spotify
+    And the dashboard API is available
     Then I should see "My Dashboard"
     When I click "My Dashboard"
     Then I should be on the dashboard page

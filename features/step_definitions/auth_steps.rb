@@ -35,92 +35,55 @@ Given("OmniAuth will return {string}") do |kind|
   end
 end
 
+# NEW STEP: This handles all the backend API mocking separately
+Given("the dashboard API is available") do
+  common_headers = {
+    'Accept'=>'*/*',
+    'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+    'Authorization'=>'Bearer access-token-1',
+    'Content-Type'=>'application/json',
+    'Host'=>'api.spotify.com',
+    'User-Agent'=>'Ruby'
+  }
+
+  # Mock 11: Top Artists (or similar)
+  stub_request(:get, "https://api.spotify.com/v1/me").
+    with(headers: common_headers).
+    to_return(status: 200, body: "", headers: {})
+
+  # Mock 12: Top Tracks (or similar)
+  stub_request(:get, "https://api.spotify.com/v1/me/top/artists?limit=10&time_range=long_term").
+    with(headers: common_headers).
+    to_return(status: 200, body: JSON.generate({ items: [] }), headers: { 'Content-Type' => 'application/json' })
+
+  # Mock 13: Followed Artists
+  stub_request(:get, "https://api.spotify.com/v1/me/top/tracks?limit=10&time_range=long_term").
+    with(headers: common_headers).
+    to_return(status: 200, body: JSON.generate({ items: [] }), headers: { 'Content-Type' => 'application/json' })
+
+  # Mock 14: New Releases - Artists
+  stub_request(:get, "https://api.spotify.com/v1/me/following?limit=20&type=artist").
+    with(headers: common_headers).
+    to_return(status: 200, body: JSON.generate({ artists: { items: [] } }), headers: { 'Content-Type' => 'application/json' })
+
+  # Mock 15: New Releases - Albums
+  stub_request(:get, "https://api.spotify.com/v1/browse/new-releases?limit=2").
+    with(headers: common_headers).
+    to_return(status: 200, body: JSON.generate({ albums: { items: [] } }), headers: { 'Content-Type' => 'application/json' })
+
+  # Mock 16: Saved Shows
+  stub_request(:get, "https://api.spotify.com/v1/me/shows?limit=8&offset=0").
+    with(headers: common_headers).
+    to_return(status: 200, body: JSON.generate({ items: [] }), headers: { 'Content-Type' => 'application/json' })
+
+  # Mock 17: Saved Episodes
+  stub_request(:get, "https://api.spotify.com/v1/me/episodes?limit=8&offset=0").
+    with(headers: common_headers).
+    to_return(status: 200, body: JSON.generate({ items: [] }), headers: { 'Content-Type' => 'application/json' })
+end
+
+# REFACTORED: Now this step is clean, generic, and reusable
 When("I click {string}") do |text|
-  if text == "My Dashboard"
-    stub_request(:get, "https://api.spotify.com/v1/me").
-      with(
-        headers: {
-          'Accept'=>'*/*',
-          'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-          'Authorization'=>'Bearer access-token-1',
-          'Content-Type'=>'application/json',
-          'Host'=>'api.spotify.com',
-          'User-Agent'=>'Ruby'
-        }).
-      to_return(status: 200, body: "", headers: {})
-
-    stub_request(:get, "https://api.spotify.com/v1/me/top/artists?limit=10&time_range=long_term").
-      with(
-        headers: {
-          'Accept'=>'*/*',
-          'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-          'Authorization'=>'Bearer access-token-1',
-          'Content-Type'=>'application/json',
-          'Host'=>'api.spotify.com',
-          'User-Agent'=>'Ruby'
-        }).
-      to_return(status: 200, body: JSON.generate({ items: [] }), headers: { 'Content-Type' => 'application/json' })
-
-    stub_request(:get, "https://api.spotify.com/v1/me/top/tracks?limit=10&time_range=long_term").
-      with(
-        headers: {
-          'Accept'=>'*/*',
-          'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-          'Authorization'=>'Bearer access-token-1',
-          'Content-Type'=>'application/json',
-          'Host'=>'api.spotify.com',
-          'User-Agent'=>'Ruby'
-        }).
-      to_return(status: 200, body: JSON.generate({ items: [] }), headers: { 'Content-Type' => 'application/json' })
-
-    stub_request(:get, "https://api.spotify.com/v1/me/following?limit=20&type=artist").
-      with(
-        headers: {
-          'Accept'=>'*/*',
-          'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-          'Authorization'=>'Bearer access-token-1',
-          'Content-Type'=>'application/json',
-          'Host'=>'api.spotify.com',
-          'User-Agent'=>'Ruby'
-        }).
-      to_return(status: 200, body: JSON.generate({ artists: { items: [] } }), headers: { 'Content-Type' => 'application/json' })
-
-    stub_request(:get, "https://api.spotify.com/v1/browse/new-releases?limit=2").
-      with(
-        headers: {
-          'Accept'=>'*/*',
-          'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-          'Authorization'=>'Bearer access-token-1',
-          'Content-Type'=>'application/json',
-          'Host'=>'api.spotify.com',
-          'User-Agent'=>'Ruby'
-        }).
-      to_return(status: 200, body: JSON.generate({ albums: { items: [] } }), headers: { 'Content-Type' => 'application/json' })
-
-    stub_request(:get, "https://api.spotify.com/v1/me/shows?limit=8&offset=0").
-      with(
-        headers: {
-          'Accept'=>'*/*',
-          'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-          'Authorization'=>'Bearer access-token-1',
-          'Content-Type'=>'application/json',
-          'Host'=>'api.spotify.com',
-          'User-Agent'=>'Ruby'
-        }).
-      to_return(status: 200, body: JSON.generate({ items: [] }), headers: { 'Content-Type' => 'application/json' })
-
-    stub_request(:get, "https://api.spotify.com/v1/me/episodes?limit=8&offset=0").
-      with(
-        headers: {
-          'Accept'=>'*/*',
-          'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-          'Authorization'=>'Bearer access-token-1',
-          'Content-Type'=>'application/json',
-          'Host'=>'api.spotify.com',
-          'User-Agent'=>'Ruby'
-        }).
-      to_return(status: 200, body: JSON.generate({ items: [] }), headers: { 'Content-Type' => 'application/json' })
-  end
   click_link_or_button text
 end
 
