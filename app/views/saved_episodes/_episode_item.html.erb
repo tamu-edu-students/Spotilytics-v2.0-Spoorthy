@@ -1,0 +1,30 @@
+<div class="list-group-item list-group-item-action bg-dark text-white border-0 mb-2 rounded d-flex align-items-center p-3 spotify-list-hover overflow-hidden">
+  <% if episode.image_url %>
+    <img src="<%= episode.image_url %>" alt="<%= episode.name %>" class="rounded me-3 shadow-sm" style="width: 64px; height: 64px; object-fit: cover; flex-shrink: 0;">
+  <% else %>
+    <div class="rounded me-3 bg-secondary d-flex align-items-center justify-content-center" style="width: 64px; height: 64px; flex-shrink: 0;">
+      <span>No Image</span>
+    </div>
+  <% end %>
+  
+  <div class="flex-grow-1 min-w-0 me-3">
+    <h6 class="mb-1 fw-bold text-white text-truncate" title="<%= episode.name %>"><%= episode.name.truncate(50) %></h6>
+    <p class="mb-1 text-secondary small text-truncate"><%= episode.show_name.truncate(40) %></p>
+    <div class="d-flex align-items-center gap-2 text-secondary small">
+      <span><%= (episode.duration_ms / 60000).round %> min</span>
+      <span>•</span>
+      <span><%= episode.release_date %></span>
+    </div>
+  </div>
+
+    <div class="d-flex align-items-center gap-2">
+      <%= button_to summarize_saved_episode_path(episode.id), class: "btn btn-icon btn-outline-info rounded-circle", method: :post, title: "Summarize Episode (AI)" do %>
+        <i class="bi bi-magic"></i>
+      <% end %>
+      <%= button_to saved_episode_path(episode.id), method: :delete, class: "btn btn-icon btn-outline-danger rounded-circle", title: "Remove from Library", data: { turbo_confirm: "Are you sure?" } do %>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+          <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
+        </svg>
+      <% end %>
+    </div>
+</div>
