@@ -4,8 +4,16 @@
   <div class="row justify-content-center mb-5">
     <div class="col-md-8">
       <%= form_with url: search_saved_shows_path, method: :get, local: true, class: "d-flex gap-2" do |form| %>
-        <%= form.text_field :query, value: @query, class: "form-control form-control-lg bg-dark text-white border-secondary", placeholder: "Search for podcasts..." %>
-        <%= form.submit "Search", class: "btn btn-spotify btn-lg" %>
+        <div class="input-group">
+          <%= form.text_field :query, value: @query, class: "form-control form-control-lg bg-dark text-white border-secondary", placeholder: "Search for podcasts..." %>
+          <div class="input-group-text bg-dark border-secondary">
+            <div class="form-check form-switch">
+              <%= form.check_box :ai_search, { class: "form-check-input", checked: params[:ai_search] == "true", role: "switch", id: "aiSearchSwitch" }, "true", "false" %>
+              <label class="form-check-label text-white small" for="aiSearchSwitch">AI Search</label>
+            </div>
+          </div>
+          <%= form.submit "Search", class: "btn btn-spotify btn-lg" %>
+        </div>
       <% end %>
     </div>
   </div>
