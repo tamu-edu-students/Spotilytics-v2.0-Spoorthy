@@ -247,7 +247,7 @@ class SpotifyClient
     cache_for([ "get_episode", id ]) do
       access_token = ensure_access_token!
       response = get("/episodes/#{id}", access_token)
-      
+
       OpenStruct.new(
         id: response["id"],
         name: response["name"],
@@ -265,7 +265,7 @@ class SpotifyClient
     cache_for([ "get_show", id ]) do
       access_token = ensure_access_token!
       response = get("/shows/#{id}", access_token)
-      
+
       OpenStruct.new(
         id: response["id"],
         name: response["name"],
