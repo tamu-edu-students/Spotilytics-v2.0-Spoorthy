@@ -4,10 +4,24 @@
 # instead of editing this one. Cucumber will automatically load all features/**/*.rb
 # files.
 
+require 'simplecov'
+SimpleCov.start 'rails' do
+  command_name 'Cucumber'
+  coverage_dir 'coverage/cucumber'
+  add_filter '/spec/'
+  add_filter '/config/'
+  add_filter '/vendor/'
+  add_filter '/db/'
+  add_group 'Models', 'app/models'
+  add_group 'Controllers', 'app/controllers'
+  add_group 'Helpers', 'app/helpers'
+  add_group 'Services', 'app/services'
+  enable_coverage :branch
+end
+
 require 'cucumber/rails'
 require 'capybara/rails'
 require 'database_cleaner/active_record'
-require 'simplecov'
 require 'webmock/cucumber'
 WebMock.disable_net_connect!(allow_localhost: true)
 
@@ -24,20 +38,6 @@ end
 After do
   RSpec::Mocks.verify
   RSpec::Mocks.teardown
-end
-
-# Enable SImpleCov
-SimpleCov.start 'rails' do
-  command_name 'Cucumber'
-  coverage_dir 'coverage/cucumber'
-  add_filter '/spec/'
-  add_filter '/config/'
-  add_filter '/vendor/'
-  add_filter '/db/'
-  add_group 'Models', 'app/models'
-  add_group 'Controllers', 'app/controllers'
-  add_group 'Helpers', 'app/helpers'
-  add_filter '/app/services/spotify_client.rb'
 end
 
 # By default, any exception happening in your Rails application will bubble up
@@ -84,13 +84,3 @@ end
 # The :transaction strategy is faster, but might give you threading problems.
 # See https://github.com/cucumber/cucumber-rails/blob/master/features/choose_javascript_database_strategy.feature
 Cucumber::Rails::Database.javascript_strategy = :truncation
-World(RSpec::Mocks::ExampleMethods)
-
-Before do
-  RSpec::Mocks.setup
-end
-
-After do
-  RSpec::Mocks.verify
-  RSpec::Mocks.teardown
-end

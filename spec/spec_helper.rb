@@ -27,6 +27,7 @@ SimpleCov.start 'rails' do
   add_group 'Services', 'app/services'
   add_group 'Helpers', 'app/helpers'
   add_group 'Views', 'app/views'
+  enable_coverage :branch
 end
 
 
