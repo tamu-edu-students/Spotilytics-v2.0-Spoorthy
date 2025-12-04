@@ -17,6 +17,16 @@
               <h5 class="card-title"><%= playlist.name %></h5>
               <p class="card-text text-secondary mb-1">Owner: <%= playlist.owner %></p>
               <p class="card-text text-secondary mb-2">Tracks: <%= playlist.tracks_total %></p>
+              <% if current_user && playlist.owner_id.to_s == current_user.id.to_s %>
+                <%= form_with url: rename_playlist_path(playlist.id), method: :patch, local: true, class: "mt-2" do |f| %>
+                  <%= hidden_field_tag :owner_id, playlist.owner_id %>
+                  <div class="mb-2">
+                    <%= f.label :name, "Rename playlist", class: "form-label text-secondary" %>
+                    <%= f.text_field :name, value: playlist.name, class: "form-control form-control-sm", required: true %>
+                  </div>
+                  <%= f.submit "Rename", class: "btn btn-sm btn-primary" %>
+                <% end %>
+              <% end %>
               <% if playlist.spotify_url.present? %>
                 <a href="<%= playlist.spotify_url %>" target="_blank" rel="noopener" class="btn btn-spotify">Open in Spotify</a>
               <% end %>

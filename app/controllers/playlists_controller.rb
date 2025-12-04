@@ -110,6 +110,30 @@ class PlaylistsController < ApplicationController
     end
   end
 
+  def rename
+    playlist_id = params[:id]
+    new_name    = params[:name].to_s.strip
+    owner_id    = params[:owner_id].to_s
+
+    if new_name.blank?
+      redirect_to library_path, alert: "Playlist name cannot be blank." and return
+    end
+
+    user_id = ensure_spotify_user_id
+    unless owner_id.present? && owner_id == user_id
+      redirect_to library_path, alert: "You can only rename playlists you own." and return
+    end
+
+    begin
+      spotify_client.update_playlist_name(playlist_id: playlist_id, name: new_name)
+      redirect_to library_path, notice: "Playlist renamed to #{new_name}."
+    rescue SpotifyClient::UnauthorizedError
+      redirect_to root_path, alert: "Session expired. Please sign in with Spotify again."
+    rescue SpotifyClient::Error => e
+      redirect_to library_path, alert: "Couldn't rename playlist: #{e.message}"
+    end
+  end
+
   def new
     load_builder_state
   end

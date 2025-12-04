@@ -122,6 +122,7 @@ class SpotifyClient
           name: item["name"],
           image_url: item.dig("images", 0, "url"),
           owner: item.dig("owner", "display_name") || item.dig("owner", "id"),
+          owner_id: item.dig("owner", "id"),
           tracks_total: item.dig("tracks", "total") || 0,
           spotify_url: item.dig("external_urls", "spotify")
         )
@@ -441,6 +442,13 @@ class SpotifyClient
     }
 
     post_json("/playlists/#{playlist_id}/tracks", access_token, payload)
+    true
+  end
+
+  def update_playlist_name(playlist_id:, name:)
+    access_token = ensure_access_token!
+    payload = { name: name }
+    request_with_json(Net::HTTP::Put, "/playlists/#{playlist_id}", access_token, body: payload)
     true
   end
 

@@ -37,6 +37,7 @@ Rails.application.routes.draw do
   post "/create_playlist_from_recommendations", to: "playlists#create_from_recommendations", as: :create_playlist_from_recommendations
   get "/playlists/new", to: "playlists#new", as: :new_playlist
   post "/playlists/add_song", to: "playlists#add_song", as: :add_playlist_song
+  patch "/playlists/:id/rename", to: "playlists#rename", as: :rename_playlist
   post "/playlists/custom", to: "playlists#create_custom", as: :create_custom_playlist
 
   # Get Recommendations
