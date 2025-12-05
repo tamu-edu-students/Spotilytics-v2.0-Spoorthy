@@ -24,6 +24,15 @@ Feature: Create a Spotify playlist from recommendations
     Then I should be on the recommendations page
     And I should see "Playlist created on Spotify: My Rec Mix"
 
+  Scenario: Successful creation with missing session user id
+    Given I am logged in for playlists without user id
+    And Spotify API returns user id "fetched_rec_user"
+    And Spotify creates playlist "Rec Mix 2" and adds tracks
+    When I POST create_playlist_from_recommendations with name "Rec Mix 2" and uris:
+      | spotify:track:3 |
+    Then I should be on the recommendations page
+    And I should see "Playlist created on Spotify: Rec Mix 2"
+
   Scenario: Spotify unauthorized during recommendations playlist creation
     Given I am logged in for playlists
     And Spotify raises Unauthorized on any call

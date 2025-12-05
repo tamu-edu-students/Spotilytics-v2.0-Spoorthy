@@ -154,6 +154,42 @@ Given('Spotify search returns no results') do
   allow(client).to receive(:search_tracks).and_return([])
 end
 
+Given('Spotify search returns no results for {string}') do |query|
+  client = mock_spotify!
+  allow(client).to receive(:search_tracks).with(include(query), anything).and_return([])
+end
+
+# ---------- New Error Stubs for Custom Playlist ----------
+
+Given("I have added a song to the custom playlist builder") do
+  visit playlist_new_path
+  step 'Spotify search returns track "Test Song" by "Test Artist" with id "t_test"'
+  fill_in "Add a song", with: "Test Song"
+  click_button "Add song"
+end
+
+Given("Spotify API raises an unauthorized error during custom playlist creation") do
+  client = mock_spotify!
+  allow(client).to receive(:create_playlist_for).and_raise(SpotifyClient::UnauthorizedError.new("token expired"))
+  allow(client).to receive(:current_user_id).and_return("user_123") # Ensure user ID check passes if needed
+end
+
+Given("Spotify API raises an error {string} during custom playlist creation") do |error_message|
+  client = mock_spotify!
+  allow(client).to receive(:create_playlist_for).and_raise(SpotifyClient::Error.new(error_message))
+  allow(client).to receive(:current_user_id).and_return("user_123")
+end
+
+Given("Spotify API raises an unauthorized error during track search") do
+  client = mock_spotify!
+  allow(client).to receive(:search_tracks).and_raise(SpotifyClient::UnauthorizedError.new("token expired"))
+end
+
+Given("Spotify API raises an error {string} during track search") do |error_message|
+  client = mock_spotify!
+  allow(client).to receive(:search_tracks).and_raise(SpotifyClient::Error.new(error_message))
+end
+
 # ---------- Actions ----------
 When("I POST create_playlist for {string}") do |range|
   page.driver.submit :post, create_playlist_path, { time_range: range }
@@ -198,6 +234,11 @@ end
 When('I upload the CSV file {string}') do |relative_path|
   path = Rails.root.join(relative_path)
   attach_file("tracks_csv", path, make_visible: true)
+end
+
+When("I POST create_custom_playlist with an empty list") do
+  # Ensure session has user but no tracks in builder
+  page.driver.submit :post, Rails.application.routes.url_helpers.create_custom_playlist_path, {}
 end
 
 Then('I should not see {string}') do |text|

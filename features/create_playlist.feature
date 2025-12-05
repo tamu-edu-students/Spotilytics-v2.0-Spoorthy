@@ -76,3 +76,15 @@ Feature: Build a custom playlist
     And I upload the CSV file "features/fixtures/create_playlist_malformed.csv"
     And I click "Upload CSV"
     Then I should see "Could not read that CSV file. Please check the formatting."
+
+  Scenario: CSV upload with duplicates and missing songs
+    And Spotify search returns tracks:
+      | query     | name       | artists    | id    |
+      | Track One | Track One  | Artist One | t1    |
+    And Spotify search returns no results for "Unknown Track"
+    When I visit the create playlist page
+    And I upload the CSV file "features/fixtures/create_playlist_mixed.csv"
+    And I click "Upload CSV"
+    Then I should see "Added 1 song."
+    And I should see "Skipped duplicates: Track One."
+    And I should see "No matches for: track:\"Unknown Track\" artist:\"Unknown Artist\"."

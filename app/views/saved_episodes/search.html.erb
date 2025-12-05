@@ -36,7 +36,7 @@
           
           <div class="flex-grow-1 min-w-0 me-3">
             <h6 class="mb-1 fw-bold text-white text-truncate" title="<%= episode.name %>"><%= episode.name.truncate(50) %></h6>
-            <p class="mb-1 text-secondary small text-truncate"><%= episode.description.truncate(100) %></p>
+            <p class="mb-1 text-secondary small text-truncate"><%= episode.description.to_s.truncate(100) %></p>
             <div class="d-flex align-items-center gap-2 text-secondary small">
               <span><%= (episode.duration_ms / 60000).round %> min</span>
               <span>•</span>
