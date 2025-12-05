@@ -12,6 +12,8 @@ SimpleCov.start 'rails' do
   add_filter '/config/'
   add_filter '/vendor/'
   add_filter '/db/'
+  add_filter '/features/'
+  add_filter 'app/services'
   add_group 'Models', 'app/models'
   add_group 'Controllers', 'app/controllers'
   add_group 'Helpers', 'app/helpers'
@@ -35,9 +37,22 @@ Before do
   RSpec::Mocks.setup
 end
 
+
 After do
   RSpec::Mocks.verify
   RSpec::Mocks.teardown
+end
+
+# --- Spotilytics Cucumber Stubs ---
+require_relative 'spotify_stubs'
+
+Before('@stub_spotify_top_tracks') do
+  stub_spotify_top_tracks(limit: 10, time_range: 'short_term')
+end
+
+# Always stub SpotifyClient for top_tracks in all scenarios
+Before do
+  stub_spotify_top_tracks(limit: 10, time_range: 'short_term')
 end
 
 # By default, any exception happening in your Rails application will bubble up

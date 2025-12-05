@@ -15,6 +15,18 @@ def create_playlist_path_for_test
   Rails.application.routes.url_helpers.create_playlist_path
 end
 
+def playlist_new_path
+  Rails.application.routes.url_helpers.new_playlist_path
+end
+
+def create_playlist_from_recommendations_path_for_test
+  Rails.application.routes.url_helpers.create_playlist_from_recommendations_path
+end
+
+def recommendations_path_for_test
+  Rails.application.routes.url_helpers.recommendations_path
+end
+
 # ---------- Navigation / Session ----------
 
 Given('I am logged in for playlists') do
@@ -100,6 +112,7 @@ end
 
 Given('Spotify raises Unauthorized on any call') do
   mock = mock_spotify!
+  allow(mock).to receive(:top_artists).and_raise(SpotifyClient::UnauthorizedError.new("token expired"))
   allow(mock).to receive(:top_tracks).and_raise(SpotifyClient::UnauthorizedError.new("token expired"))
   allow(mock).to receive(:create_playlist_for).and_raise(SpotifyClient::UnauthorizedError.new("token expired"))
   allow(mock).to receive(:add_tracks_to_playlist).and_raise(SpotifyClient::UnauthorizedError.new("token expired"))
@@ -108,10 +121,37 @@ end
 
 Given('Spotify raises Error on any call') do
   mock = mock_spotify!
+  allow(mock).to receive(:top_artists).and_raise(SpotifyClient::Error.new("rate limited"))
   allow(mock).to receive(:top_tracks).and_raise(SpotifyClient::Error.new("rate limited"))
   allow(mock).to receive(:create_playlist_for).and_raise(SpotifyClient::Error.new("rate limited"))
   allow(mock).to receive(:add_tracks_to_playlist).and_raise(SpotifyClient::Error.new("rate limited"))
   allow(mock).to receive(:current_user_id).and_raise(SpotifyClient::Error.new("rate limited"))
+end
+
+Given('Spotify search returns track {string} by {string} with id {string}') do |title, artist, track_id|
+  client = mock_spotify!
+  track  = OpenStruct.new(id: track_id, name: title, artists: artist)
+  allow(client).to receive(:search_tracks).and_return([ track ])
+end
+
+Given('Spotify search returns tracks:') do |table|
+  client = mock_spotify!
+  mapping = table.hashes.map do |row|
+    {
+      query: row.fetch("query"),
+      track: OpenStruct.new(id: row.fetch("id"), name: row.fetch("name"), artists: row.fetch("artists"))
+    }
+  end
+
+  allow(client).to receive(:search_tracks) do |query, limit: 10|
+    match = mapping.find { |m| query.to_s.downcase.include?(m[:query].downcase) }
+    match ? [ match[:track] ] : []
+  end
+end
+
+Given('Spotify search returns no results') do
+  client = mock_spotify!
+  allow(client).to receive(:search_tracks).and_return([])
 end
 
 # ---------- Actions ----------
@@ -125,10 +165,56 @@ When('I POST create_playlist for {string} without login') do |range|
   page.driver.submit :post, create_playlist_path_for_test, { time_range: range }
 end
 
+When("I POST create_playlist_from_recommendations with name {string} and uris:") do |name, table|
+  client = mock_spotify!
+  allow(client).to receive(:top_artists).and_return([])
+  allow(client).to receive(:top_tracks).and_return([])
+  allow(client).to receive(:search_tracks).and_return([])
+
+  uris = table.raw.flatten.map(&:to_s).reject(&:blank?)
+  page.driver.submit :post, create_playlist_from_recommendations_path_for_test, {
+    playlist_name: name,
+    uris:          uris
+  }
+end
+
+When("I POST create_playlist_from_recommendations without uris") do
+  client = mock_spotify!
+  allow(client).to receive(:top_artists).and_return([])
+  allow(client).to receive(:top_tracks).and_return([])
+  allow(client).to receive(:search_tracks).and_return([])
+
+  page.driver.submit :post, create_playlist_from_recommendations_path_for_test, { uris: [] }
+end
+
+When("I visit the create playlist page") do
+  visit playlist_new_path
+end
+
+When('I fill in {string} with {string}') do |label, value|
+  fill_in label, with: value
+end
+
+When('I upload the CSV file {string}') do |relative_path|
+  path = Rails.root.join(relative_path)
+  attach_file("tracks_csv", path, make_visible: true)
+end
+
+Then('I should not see {string}') do |text|
+  expect(page).not_to have_content(text)
+end
+
 # ---------- Expectations ----------
 Then("I should be on the Top Tracks page") do
   expect(page).to have_current_path(
     Rails.application.routes.url_helpers.top_tracks_path,
+    ignore_query: true
+  )
+end
+
+Then("I should be on the recommendations page") do
+  expect(page).to have_current_path(
+    recommendations_path_for_test,
     ignore_query: true
   )
 end
