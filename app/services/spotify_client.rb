@@ -520,7 +520,10 @@ class SpotifyClient
 
     body = parse_json(response.body)
 
-    if response.code.to_i >= 400
+    if response.code.to_i == 401
+      message = body["error_description"] || body.dig("error", "message") || response.message
+      raise UnauthorizedError, message
+    elsif response.code.to_i >= 400
       message = body["error_description"] || body.dig("error", "message") || response.message
       raise Error, message
     end
