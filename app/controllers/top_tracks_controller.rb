@@ -24,7 +24,7 @@ class TopTracksController < ApplicationController
       @tracks_long   = client.top_tracks(limit: @limits["long_term"],   time_range: "long_term")
 
       # Filter out any hidden tracks for the current user per time range
-      user_id = session.dig(:spotify_user, "id")
+      user_id = spotify_user_id
       if user_id.present?
         hidden = hidden_top_tracks_for_user(user_id)
 
@@ -111,7 +111,7 @@ class TopTracksController < ApplicationController
       redirect_to top_tracks_path, alert: "Invalid time range." and return
     end
 
-    user_id = session.dig(:spotify_user, "id")
+    user_id = spotify_user_id
     unless user_id.present?
       redirect_to root_path, alert: "Please sign in with Spotify first." and return
     end
@@ -129,7 +129,7 @@ class TopTracksController < ApplicationController
     time_range = params[:time_range].to_s
     track_id = params[:track_id].to_s
 
-    user_id = session.dig(:spotify_user, "id")
+    user_id = spotify_user_id
     unless user_id.present?
       redirect_to root_path, alert: "Please sign in with Spotify first." and return
     end

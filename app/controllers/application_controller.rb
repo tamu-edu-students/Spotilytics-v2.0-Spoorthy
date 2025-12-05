@@ -3,7 +3,7 @@ require "ostruct"
 class ApplicationController < ActionController::Base
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
-  helper_method :current_user, :logged_in?
+  helper_method :current_user, :logged_in?, :spotify_user_id
 
   def current_user
     return nil unless session[:spotify_user]
@@ -12,6 +12,11 @@ class ApplicationController < ActionController::Base
 
   def logged_in?
     current_user.present?
+  end
+
+  def spotify_user_id
+    user = session[:spotify_user] || {}
+    user["id"] || user[:id]
   end
 
   def require_spotify_auth!

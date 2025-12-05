@@ -15,13 +15,7 @@
       )
     end
 
-    mock_client = instance_double(SpotifyClient)
-
-    allow(SpotifyClient).to receive(:new)
-      .with(session: anything)
-      .and_return(mock_client)
-
-    allow(mock_client).to receive(:top_tracks) do |args|
+    allow_any_instance_of(SpotifyClient).to receive(:top_tracks) do |_, args|
       # capture the last call so we can assert later
       $stubbed_top_tracks_call = args
 
