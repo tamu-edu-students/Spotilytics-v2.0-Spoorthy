@@ -3,11 +3,12 @@ name: Deploy to Heroku
 on:
   pull_request:
   push:
-    branches: [ main, feature/custom_top_tracks_no ]
+    branches: [ main ]
 
 env:
   SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
   SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
 jobs:
   scan_ruby:
@@ -127,7 +128,7 @@ jobs:
       - uses: akhileshns/heroku-deploy@v3.14.15 
         with:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: "spotilytics-app"
-          heroku_email: "aurawra@outlook.com"
+          heroku_app_name: "spotilytics-version2"
+          heroku_email: "papradeep11cs@tamu.edu"
           branch: main
           usedocker: false
