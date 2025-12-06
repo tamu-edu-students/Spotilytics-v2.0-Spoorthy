@@ -45,5 +45,5 @@ flowchart LR
   Client -- "GET / POST" --> API
   Client -- "Store API result" --> CacheAPI
 
-  %% Library & follow/visibility: skip cache after mutations
-  Pages -- "Library page requests skip_cache when refreshing playlists\nso Public/Private button reflects latest state" --> Client
+  %% Library refresh after mutations
+  Pages -- "Library page can request skip_cache when refreshing playlists" --> Client

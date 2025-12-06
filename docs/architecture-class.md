@@ -35,7 +35,8 @@ classDiagram
     +add_song()
     +create_custom()
     +rename()
-    +update_visibility()
+    +update_description()
+    +update_collaborative()
     -require_spotify_auth!()
   }
 
@@ -84,7 +85,8 @@ classDiagram
     +user_playlists(limit:, offset:, skip_cache:)
     +user_playlists_all(page_size:, skip_cache:)
     +update_playlist_name(playlist_id:, name:)
-    +update_playlist_visibility(playlist_id:, public:)
+    +update_playlist_description(playlist_id:, description:)
+    +update_playlist_collaborative(playlist_id:, collaborative:)
     +saved_shows(limit:, offset:)
     +saved_episodes(limit:, offset:)
     +save_shows(ids)

@@ -18,7 +18,7 @@ RSpec.describe "Library rename", type: :request do
   end
 
   before do
-    allow_any_instance_of(SpotifyClient).to receive(:user_playlists_all).with(skip_cache: true).and_return(playlists)
+    allow_any_instance_of(SpotifyClient).to receive(:user_playlists_all).and_return(playlists)
   end
 
   def sign_in

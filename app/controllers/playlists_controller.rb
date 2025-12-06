@@ -126,11 +126,59 @@ class PlaylistsController < ApplicationController
 
     begin
       spotify_client.update_playlist_name(playlist_id: playlist_id, name: new_name)
-      redirect_to library_path, notice: "Playlist renamed to #{new_name}."
+      spotify_client.clear_user_cache
+      redirect_to library_path(refresh_playlists: 1), notice: "Playlist renamed to #{new_name}."
     rescue SpotifyClient::UnauthorizedError
       redirect_to root_path, alert: "Session expired. Please sign in with Spotify again."
     rescue SpotifyClient::Error => e
       redirect_to library_path, alert: "Couldn't rename playlist: #{e.message}"
+    end
+  end
+
+  def update_description
+    playlist_id  = params[:id]
+    description  = params[:description].to_s.strip
+    owner_id     = params[:owner_id].to_s
+
+    if description.blank?
+      redirect_to library_path, alert: "Playlist description cannot be blank." and return
+    end
+
+    user_id = ensure_spotify_user_id
+    unless owner_id.present? && owner_id == user_id
+      redirect_to library_path, alert: "You can only update playlists you own." and return
+    end
+
+    begin
+      spotify_client.update_playlist_description(playlist_id: playlist_id, description: description)
+      spotify_client.clear_user_cache
+      redirect_to library_path(refresh_playlists: 1), notice: "Playlist description updated."
+    rescue SpotifyClient::UnauthorizedError
+      redirect_to root_path, alert: "Session expired. Please sign in with Spotify again."
+    rescue SpotifyClient::Error => e
+      redirect_to library_path, alert: "Couldn't update playlist description: #{e.message}"
+    end
+  end
+
+  def update_collaborative
+    playlist_id    = params[:id]
+    collaborative  = ActiveModel::Type::Boolean.new.cast(params[:collaborative])
+    owner_id       = params[:owner_id].to_s
+
+    user_id = ensure_spotify_user_id
+    unless owner_id.present? && owner_id == user_id
+      redirect_to library_path, alert: "You can only change collaboration for playlists you own." and return
+    end
+
+    begin
+      spotify_client.update_playlist_collaborative(playlist_id: playlist_id, collaborative: collaborative)
+      spotify_client.clear_user_cache
+      message = collaborative ? "Collaboration enabled." : "Collaboration disabled."
+      redirect_to library_path(refresh_playlists: 1), notice: message
+    rescue SpotifyClient::UnauthorizedError
+      redirect_to root_path, alert: "Session expired. Please sign in with Spotify again."
+    rescue SpotifyClient::Error => e
+      redirect_to library_path, alert: "Couldn't update playlist collaboration: #{e.message}"
     end
   end
 

@@ -38,6 +38,8 @@ Rails.application.routes.draw do
   get "/playlists/new", to: "playlists#new", as: :new_playlist
   post "/playlists/add_song", to: "playlists#add_song", as: :add_playlist_song
   patch "/playlists/:id/rename", to: "playlists#rename", as: :rename_playlist
+  patch "/playlists/:id/description", to: "playlists#update_description", as: :playlist_description
+  patch "/playlists/:id/collaborative", to: "playlists#update_collaborative", as: :playlist_collaborative
   post "/playlists/custom", to: "playlists#create_custom", as: :create_custom_playlist
 
   # Get Recommendations

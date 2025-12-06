@@ -128,7 +128,8 @@ class PagesController < ApplicationController
   end
 
   def library
-    @playlists = fetch_user_playlists_all
+    refresh = params[:refresh_playlists].present?
+    @playlists = fetch_user_playlists_all(refresh: refresh)
   rescue SpotifyClient::UnauthorizedError
     redirect_to home_path, alert: "You must log in with spotify to view your library." and return
   rescue SpotifyClient::Error => e
@@ -179,8 +180,8 @@ class PagesController < ApplicationController
     spotify_client.user_playlists(limit: limit, offset: offset)
   end
 
-  def fetch_user_playlists_all
-    spotify_client.user_playlists_all
+  def fetch_user_playlists_all(refresh: false)
+    spotify_client.user_playlists_all(skip_cache: refresh)
   end
 
   # MERGE: Added these methods from feat/save-episodes-and-shows

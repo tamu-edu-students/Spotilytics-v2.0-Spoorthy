@@ -16,8 +16,17 @@
             <div class="card-body">
               <h5 class="card-title"><%= playlist.name %></h5>
               <p class="card-text text-secondary mb-1">Owner: <%= playlist.owner %></p>
-              <p class="card-text text-secondary mb-2">Tracks: <%= playlist.tracks_total %></p>
+              <p class="card-text text-secondary mb-1">Tracks: <%= playlist.tracks_total %></p>
+              <p class="card-text text-secondary mb-2">Description: <%= playlist.description.present? ? playlist.description : "No description" %></p>
               <% if current_user && playlist.owner_id.to_s == current_user.id.to_s %>
+                <%= form_with url: playlist_collaborative_path(playlist.id), method: :patch, local: true, class: "mt-2" do |f| %>
+                  <%= hidden_field_tag :owner_id, playlist.owner_id %>
+                  <%= hidden_field_tag :collaborative, (!playlist.collaborative).to_s %>
+                  <% collab_label = playlist.collaborative ? "Disable collaboration" : "Enable collaboration" %>
+                  <% collab_class = playlist.collaborative ? "btn btn-sm btn-outline-warning me-2" : "btn btn-sm btn-success me-2" %>
+                  <%= f.submit collab_label, class: collab_class %>
+                <% end %>
+
                 <%= form_with url: rename_playlist_path(playlist.id), method: :patch, local: true, class: "mt-2" do |f| %>
                   <%= hidden_field_tag :owner_id, playlist.owner_id %>
                   <div class="mb-2">
@@ -25,6 +34,15 @@
                     <%= f.text_field :name, value: playlist.name, class: "form-control form-control-sm", required: true %>
                   </div>
                   <%= f.submit "Rename", class: "btn btn-sm btn-primary" %>
+                <% end %>
+
+                <%= form_with url: playlist_description_path(playlist.id), method: :patch, local: true, class: "mt-3" do |f| %>
+                  <%= hidden_field_tag :owner_id, playlist.owner_id %>
+                  <div class="mb-2">
+                    <%= f.label :description, "Update description", class: "form-label text-secondary" %>
+                    <%= f.text_area :description, value: playlist.description, class: "form-control form-control-sm", rows: 3, required: true %>
+                  </div>
+                  <%= f.submit "Save description", class: "btn btn-sm btn-secondary" %>
                 <% end %>
               <% end %>
               <% if playlist.spotify_url.present? %>

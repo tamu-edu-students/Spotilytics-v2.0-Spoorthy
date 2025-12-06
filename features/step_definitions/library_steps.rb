@@ -10,6 +10,9 @@ Given("Spotify playlists API returns the following playlists:") do |table|
       "images" => [ { "url" => "https://img/#{row['name'].parameterize}.jpg" } ],
       "owner" => { "display_name" => row.fetch("owner"), "id" => row.fetch("owner_id", "owner-1") },
       "tracks" => { "total" => row.fetch("tracks_total").to_i },
+      "description" => row["description"],
+      "collaborative" => ActiveModel::Type::Boolean.new.cast(row["collaborative"]),
+      "public" => row["public"],
       "external_urls" => { "spotify" => "https://open.spotify.com/playlist/#{row.fetch('name').parameterize}" }
     }
   end
@@ -26,6 +29,27 @@ Given("Spotify playlists API returns an error") do
 end
 
 Given('Spotify playlist rename API succeeds for {string}') do |playlist_id|
+  stub_spotify_me_profile
+
+  stub_request(:put, "https://api.spotify.com/v1/playlists/#{playlist_id}")
+    .to_return(status: 200, body: "{}", headers: { "Content-Type" => "application/json" })
+end
+
+Given('Spotify playlist visibility API succeeds for {string}') do |playlist_id|
+  stub_spotify_me_profile
+
+  stub_request(:put, "https://api.spotify.com/v1/playlists/#{playlist_id}")
+    .to_return(status: 200, body: "{}", headers: { "Content-Type" => "application/json" })
+end
+
+Given('Spotify playlist description API succeeds for {string}') do |playlist_id|
+  stub_spotify_me_profile
+
+  stub_request(:put, "https://api.spotify.com/v1/playlists/#{playlist_id}")
+    .to_return(status: 200, body: "{}", headers: { "Content-Type" => "application/json" })
+end
+
+Given('Spotify playlist collaboration API succeeds for {string}') do |playlist_id|
   stub_spotify_me_profile
 
   stub_request(:put, "https://api.spotify.com/v1/playlists/#{playlist_id}")
