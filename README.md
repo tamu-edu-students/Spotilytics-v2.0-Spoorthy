@@ -12,7 +12,7 @@ Spotilytics v2.0 is a Ruby on Rails web application that uses Spotify OAuth 2.0 
 - **Slack Group** (to track Scrum Events) - #606-project3-team1 - [https://tamu.slack.com/archives/C09RYTFDDFX](https://tamu.slack.com/archives/C09RYTFDDFX)
 - **Spotify Developer Dashboard:** [https://developer.spotify.com/dashboard](https://developer.spotify.com/dashboard)
 - **User Stories List:** [https://docs.google.com/document/d/1jVv2fd3zgR0hf0M2sIa5QTSD2Ow-P9SO1jITTCoR7os/edit?pli=1&tab=t.0](https://docs.google.com/document/d/1jVv2fd3zgR0hf0M2sIa5QTSD2Ow-P9SO1jITTCoR7os/edit?pli=1&tab=t.0)
-
+- **Sprint Meeting Notes:** [https://docs.google.com/document/d/1HktE-eT2kkafAEvjenOyCFEh3vEZeHGoUPehkiv7BvY/edit?usp=sharing](https://docs.google.com/document/d/1HktE-eT2kkafAEvjenOyCFEh3vEZeHGoUPehkiv7BvY/edit?usp=sharing)
 
 ## New Features in Spotilytics v2.0
 1. Recommendations Tab:
