@@ -8,7 +8,6 @@ Spotilytics v2.0 is a Ruby on Rails web application that uses Spotify OAuth 2.0 
 
 - **Heroku Dashboard:** [https://spotilytics-version2-c80381d23acb.herokuapp.com/home](https://spotilytics-version2-c80381d23acb.herokuapp.com/home)
 - **GitHub Projects Dashboard:** [https://github.com/orgs/tamu-edu-students/projects/176](https://github.com/orgs/tamu-edu-students/projects/176)
-- **Burn up chart** [https://github.com/orgs/tamu-edu-students/projects/154/insights](https://github.com/orgs/tamu-edu-students/projects/154/insights)
 - **Slack Group** (to track Scrum Events) - #606-project3-team1 - [https://tamu.slack.com/archives/C09RYTFDDFX](https://tamu.slack.com/archives/C09RYTFDDFX)
 - **Spotify Developer Dashboard:** [https://developer.spotify.com/dashboard](https://developer.spotify.com/dashboard)
 - **User Stories List:** [https://docs.google.com/document/d/1jVv2fd3zgR0hf0M2sIa5QTSD2Ow-P9SO1jITTCoR7os/edit?pli=1&tab=t.0](https://docs.google.com/document/d/1jVv2fd3zgR0hf0M2sIa5QTSD2Ow-P9SO1jITTCoR7os/edit?pli=1&tab=t.0)

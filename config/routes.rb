@@ -68,4 +68,6 @@ Rails.application.routes.draw do
       post :bulk_save
     end
   end
+
+  get "*path", to: redirect("/home")
 end
