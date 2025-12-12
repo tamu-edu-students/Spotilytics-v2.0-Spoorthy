@@ -45,6 +45,10 @@
             <%= link_to "Library", library_path, class: "nav-link #{'active' if current_page?(library_path)}" %>
             <%= link_to "Recommendations", recommendations_path, class: "nav-link #{'active' if current_page?(recommendations_path)}" %>
             <%= link_to "Create Playlist", new_playlist_path, class: "nav-link #{'active' if current_page?(new_playlist_path)}" %>
+            <span class="nav-link">
+              Cached Tracks:
+              <strong><%= @top_tracks_count || 0 %></strong>
+            </span>
           <% end %>
         </div>
 

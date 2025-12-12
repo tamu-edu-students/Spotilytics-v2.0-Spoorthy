@@ -10,6 +10,8 @@ class TopTracksController < ApplicationController
   def index
     client = SpotifyClient.new(session: session)
 
+    @top_tracks_count = client.top_tracks_cached_count()
+
     @limits = {
       "short_term"  => normalize_limit(params[:limit_short_term]),
       "medium_term" => normalize_limit(params[:limit_medium_term]),

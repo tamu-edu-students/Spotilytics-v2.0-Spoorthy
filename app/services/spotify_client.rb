@@ -363,6 +363,29 @@ class SpotifyClient
     end
   end
 
+  def top_tracks_cached_count()
+    user_id = current_user_id
+    return 0 unless user_id
+
+    keys = [
+    [ "spotify", user_id, "top_tracks", "long_term", 10 ].join("_"),
+    [ "spotify", user_id, "top_tracks", "medium_term", 10 ].join("_"),
+    [ "spotify", user_id, "top_tracks", "short_term", 10 ].join("_")
+  ]
+    total = 0
+
+    keys.each do |key|
+      Rails.logger.info "[SpotifyCache] Checking cached key: #{key}"
+      Rails.logger.info "[SpotifyCache] Checking cached top tracks count for key: #{key}"
+
+      cached = Rails.cache.read(key)
+      total += cached.size if cached.respond_to?(:size)
+    end
+
+    Rails.logger.info "[SpotifyCache] Cached top tracks total: #{total}"
+    total
+  end
+
   def follow_artists(ids)
     ids = Array(ids).map(&:to_s).uniq
     return true if ids.empty?
