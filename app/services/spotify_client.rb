@@ -370,7 +370,13 @@ class SpotifyClient
     keys = [
     [ "spotify", user_id, "top_tracks", "long_term", 10 ].join("_"),
     [ "spotify", user_id, "top_tracks", "medium_term", 10 ].join("_"),
-    [ "spotify", user_id, "top_tracks", "short_term", 10 ].join("_")
+    [ "spotify", user_id, "top_tracks", "short_term", 10 ].join("_"),
+    [ "spotify", user_id, "top_tracks", "long_term", 50 ].join("_"),
+    [ "spotify", user_id, "top_tracks", "medium_term", 50 ].join("_"),
+    [ "spotify", user_id, "top_tracks", "short_term", 50 ].join("_"),
+    [ "spotify", user_id, "top_tracks", "long_term", 25 ].join("_"),
+    [ "spotify", user_id, "top_tracks", "medium_term", 25 ].join("_"),
+    [ "spotify", user_id, "top_tracks", "short_term", 25 ].join("_")
   ]
     total = 0
 
